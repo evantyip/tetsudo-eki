@@ -17,23 +17,11 @@ spec:
         paths:
           - path: /api/users/?(.*)
             backend:
-              serviceName: auth-srv
-              servicePort: 3000
-          - path: /api/tickets/?(.*)
-            backend:
-              serviceName: tickets-srv
-              servicePort: 3000
-          - path: /api/orders/?(.*)
-            backend:
-              serviceName: orders-srv
-              servicePort: 3000
-          - path: /api/payments/?(.*)
-            backend:
-              serviceName: payments-srv
+              serviceName: tetsudoeki-auth-srv
               servicePort: 3000
           - path: /(.*)
             backend:
-              serviceName: client-srv
+              serviceName: tetsudoeki-client-srv
               servicePort: 3000
 ---
 apiVersion: v1

@@ -22,7 +22,7 @@
 - cp .json and Dockerfiles from other service(ex: tickets), update package.json
 - cp app.ts, index.ts, nats-wrapper.ts from another service
 - maybe cp test folder, **mocks** folder
-- docker build and update skaffold.yaml
+- docker build, push, and update skaffold.yaml
 - update ingress path if needed
 - create basic routes
 - create mongodb model schema

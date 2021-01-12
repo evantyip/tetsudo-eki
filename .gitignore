@@ -1,5 +1,6 @@
 # Microservices ignores
 auth/node_modules
+auth/common/node_modules
 tickets/node_modules
 orders/node_modules
 expiration/node_modules
