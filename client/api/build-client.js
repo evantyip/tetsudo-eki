@@ -11,9 +11,12 @@ const buildClient = ({ req }) => {
     // we are on the server
 
     return axios.create({
-      baseURL: 'http://www.tetsudoeki.com',
+      // Production URL
+      // baseURL: 'http://www.tetsudoeki.com',
+
       // development URL
-      //'http://ingress-nginx-controller.ingress-nginx.svc.cluster.local',
+      baseURL:
+        'http://ingress-nginx-controller.ingress-nginx.svc.cluster.local',
       headers: req.headers,
     });
   } else {
