@@ -11,7 +11,7 @@ const buildClient = ({ req }) => {
     // we are on the server
 
     return axios.create({
-      Production URL
+      // Production URL
       baseURL: 'http://www.tetsudoeki.com',
 
       // development URL
