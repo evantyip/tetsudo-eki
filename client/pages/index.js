@@ -8,7 +8,7 @@ import Link from 'next/link';
 const LandingPage = ({ currentUser }) => {
   return (
     <div>
-      <h4>Welcome {currentUser.email}</h4>
+      <h4>Welcome {currentUser && currentUser.email}</h4>
     </div>
   );
 };
