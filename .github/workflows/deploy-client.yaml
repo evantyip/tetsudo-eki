@@ -16,9 +16,9 @@ jobs:
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-      - run: docker push evantyip/client
+      - run: docker push evantyip/tetsudoeki-client
       - uses: digitalocean/action-doctl@v2
         with:
           token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
       - run: doctl kubernetes cluster kubeconfig save tetsudo-eki
-      - run: kubectl rollout restart deployment client-depl
+      - run: kubectl rollout restart deployment tetsudoeki-client-depl

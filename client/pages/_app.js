@@ -7,7 +7,7 @@ import Header from '../components/header';
 // Description:
 // every rendered component will be wrapped by AppComponent
 // also global css is applied through this
-
+//
 const AppComponent = ({ Component, pageProps, currentUser }) => {
   return (
     <div>
