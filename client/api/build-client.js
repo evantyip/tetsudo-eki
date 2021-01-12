@@ -15,7 +15,7 @@ const buildClient = ({ req }) => {
       // baseURL: 'http://www.tetsudoeki.com',
 
       // development URL
-      // baseURL: `${process.env.BASE_URL}`,
+      baseURL: `${process.env.BASE_URL}`,
       headers: req.headers,
     });
   } else {
