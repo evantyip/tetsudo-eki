@@ -4,10 +4,14 @@
 
 - skaffold dev
 
-## Setup
+## Kubernetes Prod/dev Setup
 
+- Cert Manager
+- Ingress Ngnix
 - setup jwt-secret for process.env.JWT_KEY to run properly
+- setup client-baseurl as BASE_URL to run properly
 - kubectl create secret generic jwt-secret --from-literal=JWT_KEY=(insert key)
+-
 - if using this as a template, change NATS_CLUSTER_ID in .depl files
 
 ## kubernetes problems I run into

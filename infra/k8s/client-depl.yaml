@@ -16,6 +16,12 @@ spec:
       containers:
         - name: tetsudoeki-client
           image: evantyip/tetsudoeki-client
+          env:
+            - name: BASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: client-baseurl
+                  key: BASE_URL
 ---
 apiVersion: v1
 kind: Service

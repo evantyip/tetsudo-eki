@@ -15,8 +15,7 @@ const buildClient = ({ req }) => {
       // baseURL: 'http://www.tetsudoeki.com',
 
       // development URL
-      baseURL:
-        'http://ingress-nginx-controller.ingress-nginx.svc.cluster.local',
+      baseURL: `${process.env.BASE_URL}`,
       headers: req.headers,
     });
   } else {
