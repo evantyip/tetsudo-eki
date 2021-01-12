@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tetsudoeki-auth-mongo-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tetsudoeki-auth-mongo
+  template:
+    metadata:
+      labels:
+        app: tetsudoeki-auth-mongo
+    spec:
+      containers:
+        - name: tetsudoeki-auth-mongo
+          image: mongo
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tetsudoeki-auth-mongo-srv
+spec:
+  selector:
+    app: tetsudoeki-auth-mongo
+  ports:
+    - name: db
+      protocol: TCP
+      port: 27017
+      targetPort: 27017

@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tetsudoeki-auth-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tetsudoeki-auth
+  template:
+    metadata:
+      labels:
+        app: tetsudoeki-auth
+    spec:
+      containers:
+        - name: tetsudoeki-auth
+          image: evantyip/tetsudoeki-auth
+          env:
+            - name: MONGO_URI
+              value: 'mongodb://tetsudoeki-auth-mongo-srv:27017/auth'
+            - name: JWT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: JWT_KEY
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tetsudoeki-auth-srv
+spec:
+  selector:
+    app: tetsudoeki-auth
+  ports:
+    - name: tetsudoeki-auth
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
