@@ -11,11 +11,11 @@ const buildClient = ({ req }) => {
     // we are on the server
 
     return axios.create({
-      // Production URL
-      // baseURL: 'http://www.tetsudoeki.com',
+      Production URL
+      baseURL: 'http://www.tetsudoeki.com',
 
       // development URL
-      baseURL: `${process.env.BASE_URL}`,
+      // baseURL: `${process.env.BASE_URL}`,
       headers: req.headers,
     });
   } else {
