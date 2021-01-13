@@ -1,6 +1,7 @@
 import 'bootstrap/dist/css/bootstrap.css';
 import buildClient from '../api/build-client';
 import Header from '../components/header';
+import type {AppProps , AppContext } from 'next/app'
 
 // AppComponent (think wrapper)
 //
@@ -8,7 +9,14 @@ import Header from '../components/header';
 // every rendered component will be wrapped by AppComponent
 // also global css is applied through this
 //
-const AppComponent = ({ Component, pageProps, currentUser }) => {
+
+interface CurrentUser {
+  email: string;
+  id: string;
+
+}
+
+const AppComponent = ({ Component, pageProps, currentUser }: {Component: AppProps; pageProps: AppProps; currentUser: CurrentUser}) => {
   return (
     <div>
       <Header currentUser={currentUser} />
@@ -21,7 +29,7 @@ const AppComponent = ({ Component, pageProps, currentUser }) => {
 
 // get initial props for App Component and <Component />
 // if needed
-AppComponent.getInitialProps = async (appContext) => {
+AppComponent.getInitialProps = async (appContext: AppContext) => {
   const client = buildClient(appContext.ctx);
   const { data } = await client.get('/api/users/currentuser');
 

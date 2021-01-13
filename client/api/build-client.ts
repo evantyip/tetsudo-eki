@@ -6,7 +6,9 @@ import axios from 'axios';
 // creates an axios object/instance that can either
 // communicate from within server or regular comminucation
 // (used in getInitialProps server side rendering)
-const buildClient = ({ req }) => {
+
+interface Request {}
+const buildClient = ({ req }: any) => {
   if (typeof window === 'undefined') {
     // we are on the server
 

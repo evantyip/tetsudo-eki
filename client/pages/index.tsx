@@ -5,7 +5,13 @@
 
 import Link from 'next/link';
 
-const LandingPage = ({ currentUser }) => {
+interface CurrentUser {
+  email: string;
+  id: string;
+
+}
+const LandingPage = ({ currentUser }: {currentUser: CurrentUser}) => {
+  console.log(currentUser)
   return (
     <div>
       <h4>Welcome {currentUser && currentUser.email}</h4>
@@ -13,7 +19,7 @@ const LandingPage = ({ currentUser }) => {
   );
 };
 
-LandingPage.getInitialProps = async (context, client, currentUser) => {
+LandingPage.getInitialProps = async (context, client, currentUser: CurrentUser) => {
   return {};
 };
 
