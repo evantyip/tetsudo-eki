@@ -6,17 +6,17 @@ import axios from 'axios';
 // creates an axios object/instance that can either
 // communicate from within server or regular comminucation
 // (used in getInitialProps server side rendering)
-
 const buildClient = ({ req }) => {
   if (typeof window === 'undefined') {
     // we are on the server
-
+    const baseURL = process.env.BASE_URL
+      ? `${process.env.BASE_URL}`
+      : 'http://ingress-nginx-controller.ingress-nginx.svc.cluster.local';
+    console.log(baseURL);
     return axios.create({
-      // Production URL
-      // baseURL: 'http://www.tetsudoeki.com',
-
+      baseURL,
       // development URL
-      baseURL: `${process.env.BASE_URL}`,
+      //,
       headers: req.headers,
     });
   } else {

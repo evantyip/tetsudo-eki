@@ -4,6 +4,8 @@
 // shows a list of all available tickets
 
 import Link from 'next/link';
+import buildClient from '../api/build-client';
+// import { getServerSideProps } from 'next';
 
 const LandingPage = ({ currentUser }) => {
   console.log(currentUser);
@@ -15,7 +17,8 @@ const LandingPage = ({ currentUser }) => {
 };
 
 LandingPage.getInitialProps = async (context, client, currentUser) => {
-  return {};
+  // const { data } = await client.get('/api/tickets');
+  // return { tickets: data };
 };
 
 export default LandingPage;
