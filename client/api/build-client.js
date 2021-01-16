@@ -9,10 +9,7 @@ import axios from 'axios';
 const buildClient = ({ req }) => {
   if (typeof window === 'undefined') {
     // we are on the server
-    const baseURL = process.env.BASE_URL
-      ? `${process.env.BASE_URL}`
-      : 'http://ingress-nginx-controller.ingress-nginx.svc.cluster.local';
-    console.log(baseURL);
+    const baseURL = process.env.BASE_URL;
     return axios.create({
       baseURL,
       // development URL
