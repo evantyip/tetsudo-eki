@@ -2,38 +2,60 @@ import express, { Request, Response } from 'express';
 import { body } from 'express-validator';
 import jwt from 'jsonwebtoken';
 
-import { validateRequest, BadRequestError } from '@tetsudoeki/common';
+import {
+  validateRequest,
+  BadRequestError,
+  requireAuth,
+  currentUser,
+} from '@tetsudoeki/common';
 import { Password } from '../utility/password';
 import { User } from '../models/user';
 
 const router = express.Router();
 
 router.post(
-  '/api/users/signin',
+  '/api/users/updatepassword',
+  currentUser,
+  requireAuth,
   [
     body('email').isEmail().withMessage('Email must be valid'),
-    body('password')
+    body('oldPassword')
       .trim()
       .notEmpty()
-      .withMessage('You must supply a password'),
+      .withMessage('You must supply old password'),
+    body('newPassword')
+      .trim()
+      .notEmpty()
+      .withMessage('You must supply new password'),
   ],
   validateRequest,
   async (req: Request, res: Response) => {
-    const { email, password } = req.body;
+    const { email, oldPassword, newPassword } = req.body;
 
     const existingUser = await User.findOne({ email });
     if (!existingUser) {
       throw new BadRequestError('Invalid credentials');
     }
 
+    if (
+      existingUser.id !== req.currentUser!.id ||
+      existingUser.email !== req.currentUser!.email
+    ) {
+      throw new BadRequestError('Invalid credentials');
+    }
+
     const passwordsMatch = await Password.compare(
       existingUser.password,
-      password
+      oldPassword
     );
 
     if (!passwordsMatch) {
       throw new BadRequestError('Invalid credentials');
     }
+
+    // updating password
+    existingUser.password = newPassword;
+    await existingUser.save();
 
     // Generate JWT
     const userJWT = jwt.sign(
@@ -53,4 +75,4 @@ router.post(
   }
 );
 
-export { router as signinRouter };
+export { router as updatePwRouter };

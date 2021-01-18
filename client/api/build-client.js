@@ -9,13 +9,11 @@ import axios from 'axios';
 const buildClient = ({ req }) => {
   if (typeof window === 'undefined') {
     // we are on the server
-
+    const baseURL = process.env.BASE_URL;
     return axios.create({
-      // Production URL
-      // baseURL: 'http://www.tetsudoeki.com',
-
+      baseURL,
       // development URL
-      baseURL: `${process.env.BASE_URL}`,
+      //,
       headers: req.headers,
     });
   } else {

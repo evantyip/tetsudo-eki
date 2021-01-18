@@ -1,13 +1,32 @@
 import { useState } from 'react';
 import Router from 'next/router';
 import useRequest from '../../hooks/use-request';
+import CustomFooter from '../../components/footer';
+import { Layout, Button, Form, Input, Space, Typography } from 'antd';
 
-// Signup page
+const { Content } = Layout;
+const { Title, Text } = Typography;
+
+const layout = {
+  labelCol: {
+    span: 5,
+  },
+  wrapperCol: {
+    span: 16,
+  },
+};
+const tailLayout = {
+  wrapperCol: {
+    offset: 4,
+    span: 16,
+  },
+};
+// Signin page
 //
 // Description:
 // see title
 
-const Signup = () => {
+const Signin = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const { doRequest, errors } = useRequest({
@@ -22,36 +41,71 @@ const Signup = () => {
     },
   });
 
-  const onSubmit = async (event) => {
-    event.preventDefault();
-
+  const onFinish = async (values) => {
     doRequest();
   };
 
+  const onFinishFailed = (errorInfo) => {
+    // Maybe future stuff
+  };
+
+  // maybe change to a form?
   return (
-    <form onSubmit={onSubmit}>
-      <h1>Sign In</h1>
-      <div className="form-group">
-        <label>Email Address</label>
-        <input
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="form-control"
-        />
-      </div>
-      <div className="form-group">
-        <label>Password</label>
-        <input
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          type="password"
-          className="form-control"
-        />
-      </div>
-      {errors}
-      <button className="btn btn-primary">Sign In</button>
-    </form>
+    <Layout className="site-layout" style={{ marginLeft: 200 }}>
+      {/* <Header className="site-layout-background" style={{ padding: 0 }} /> */}
+      <Content style={{ margin: '24px 16px 0', overflow: 'initial' }}>
+        <div
+          className="site-layout-background"
+          style={{ padding: 24, textAlign: 'center' }}
+        >
+          {errors}
+          <Title level={2}>Sign In</Title>
+          <Form
+            {...layout}
+            name="basic"
+            initialValues={{
+              remember: true,
+            }}
+            onFinish={onFinish}
+            onFinishFailed={onFinishFailed}
+          >
+            <Form.Item
+              label="Email"
+              name="email"
+              rules={[
+                {
+                  required: true,
+                  message: 'Please input your email!',
+                },
+              ]}
+            >
+              <Input onChange={(e) => setEmail(e.target.value)} />
+            </Form.Item>
+
+            <Form.Item
+              label="Password"
+              name="password"
+              rules={[
+                {
+                  required: true,
+                  message: 'Please input your password!',
+                },
+              ]}
+            >
+              <Input.Password onChange={(e) => setPassword(e.target.value)} />
+            </Form.Item>
+
+            <Form.Item {...tailLayout}>
+              <Button type="primary" shape="round" htmlType="submit">
+                Submit
+              </Button>
+            </Form.Item>
+          </Form>
+        </div>
+      </Content>
+      <CustomFooter />
+    </Layout>
   );
 };
 
-export default Signup;
+export default Signin;
