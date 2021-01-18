@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { useState } from 'react';
+import { Alert } from 'antd';
 
 // useRequest
 // Description:
@@ -21,14 +22,17 @@ const useRequest = ({ url, method, body, onSuccess }) => {
       return response.data;
     } catch (err) {
       setErrors(
-        <div className="alert alert-danger">
-          <h4>Oops....</h4>
-          <ul className="my-0">
-            {err.response.data.errors.map((err) => {
-              return <li key={err.message}>{err.message}</li>;
-            })}
-          </ul>
-        </div>
+        err.response.data.errors.map((err) => {
+          return (
+            <Alert
+              showIcon
+              description={err.message}
+              closable
+              message="Error"
+              type="error"
+            />
+          );
+        })
       );
     }
   };

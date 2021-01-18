@@ -1,6 +1,9 @@
 //import 'bootstrap/dist/css/bootstrap.css';
 import buildClient from '../api/build-client';
-import Header from '../components/header';
+import 'antd/dist/antd.css';
+import Sidebar from '../components/sidebar';
+import { Layout } from 'antd';
+import '../css/styles.css';
 
 // AppComponent (think wrapper)
 //
@@ -8,14 +11,12 @@ import Header from '../components/header';
 // every rendered component will be wrapped by AppComponent
 // also global css is applied through this
 
-const AppComponent = ({ Component, pageProps, currentUser }) => {
+const AppComponent = ({ Component, pageProps, currentUser, router }) => {
   return (
-    <div>
-      <Header currentUser={currentUser} />
-      <div className="container">
-        <Component currentUser={currentUser} {...pageProps} />
-      </div>
-    </div>
+    <Layout>
+      <Sidebar currentUser={currentUser} route={router.route} {...pageProps} />
+      <Component currentUser={currentUser} {...pageProps} />
+    </Layout>
   );
 };
 
