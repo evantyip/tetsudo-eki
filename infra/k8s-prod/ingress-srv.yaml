@@ -19,6 +19,10 @@ spec:
             backend:
               serviceName: tetsudoeki-auth-srv
               servicePort: 3000
+          - path: /api/discover/?(.*)
+            backend:
+              serviceName: tetsudoeki-discover-srv
+              servicePort: 3000
           - path: /(.*)
             backend:
               serviceName: tetsudoeki-client-srv

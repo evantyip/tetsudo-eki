@@ -11,3 +11,7 @@
 .site-layout .site-layout-background {
   background: #fff;
 }
+
+.ant-card-meta-title {
+  white-space: pre-line;
+}

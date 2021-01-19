@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tetsudoeki-discover-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tetsudoeki-discover
+  template:
+    metadata:
+      labels:
+        app: tetsudoeki-discover
+    spec:
+      containers:
+        - name: tetsudoeki-discover
+          image: evantyip/tetsudoeki-discover
+          env:
+            - name: NATS_CLIENT_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: NATS_URL
+              value: 'http://nats-srv:4222'
+            - name: NATS_CLUSTER_ID
+              value: tetsudoeki
+            - name: MONGO_URI
+              value: 'mongodb://tetsudoeki-discover-mongo-srv:27017/discover'
+            - name: JWT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: JWT_KEY
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tetsudoeki-discover-srv
+spec:
+  selector:
+    app: tetsudoeki-discover
+  ports:
+    - name: tetsudoeki-discover
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
