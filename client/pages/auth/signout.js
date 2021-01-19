@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import Router from 'next/router';
 import useRequest from '../../hooks/use-request';
+import { Spin } from 'antd';
 
 // Sign Out Page
 //
@@ -19,8 +20,7 @@ const signout = () => {
     doRequest();
   }, []);
 
-  // Future maybe make a spinner
-  return <div>Signing you out...</div>;
+  return <Spin />;
 };
 
 export default signout;

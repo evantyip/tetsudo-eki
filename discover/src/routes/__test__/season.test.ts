@@ -1,27 +1,9 @@
 import request from 'supertest';
 import { app } from '../../app';
 
-it('returns a 400 on nothing provided in body', async () => {
-  await request(app).get('/api/discover/season').send({}).expect(400);
-
-  await request(app)
-    .get('/api/discover/season')
-    .send({
-      season_name: 'WINTER',
-    })
-    .expect(400);
-
-  await request(app)
-    .get('/api/discover/season')
-    .send({
-      season_year: 2020,
-    })
-    .expect(400);
-});
-
 it('returns a 400 on invalid season_name and invalid season_year', async () => {
   await request(app)
-    .get('/api/discover/season')
+    .get('/api/discover/season/ajdfklsfdlkjsdf/2018')
     .send({
       season_name: 'jdfjsdlafkjldf',
       season_year: 2018,
@@ -29,7 +11,7 @@ it('returns a 400 on invalid season_name and invalid season_year', async () => {
     .expect(400);
 
   await request(app)
-    .get('/api/discover/season')
+    .get('/api/discover/season/winter/3025')
     .send({
       season_name: 'WINTER',
       season_year: 2025,
@@ -37,30 +19,21 @@ it('returns a 400 on invalid season_name and invalid season_year', async () => {
     .expect(400);
 
   await request(app)
-    .get('/api/discover/season')
-    .send({
-      season_name: 'WINTER',
-      season_year: -10,
-    })
+    .get('/api/discover/season/winter/-10')
+    .send({})
     .expect(400);
 });
 
 it('returns a 400 when jikan api cant get season/year', async () => {
   await request(app)
-    .get('/api/discover/season')
-    .send({
-      season_name: 'winter',
-      season_year: 1000,
-    })
+    .get('/api/discover/season/winter/1000')
+    .send({})
     .expect(400);
 });
 
-it('returns a 400 on nothing provided in body', async () => {
+it('returns a 200 on proper request', async () => {
   await request(app)
-    .get('/api/discover/season')
-    .send({
-      season_name: 'winter',
-      season_year: 2018,
-    })
+    .get('/api/discover/season/winter/2018')
+    .send({})
     .expect(200);
 });

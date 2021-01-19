@@ -1,5 +1,5 @@
 import express, { Request, Response } from 'express';
-import { body } from 'express-validator';
+import { body, param } from 'express-validator';
 import { validateRequest, BadRequestError } from '@tetsudoeki/common';
 import axios from 'axios';
 import { Season } from '../models/seasonModel';
@@ -7,16 +7,10 @@ import { Season } from '../models/seasonModel';
 const router = express.Router();
 
 router.get(
-  '/api/discover/season',
-  [
-    body('season_name').not().isEmpty().withMessage('Season is required'),
-    body('season_year').isNumeric().withMessage('Year must be a number'),
-  ],
-  validateRequest,
+  '/api/discover/season/:name/:year',
   async (req: Request, res: Response) => {
-    const { body } = req;
-    const season_name = body.season_name.toLowerCase();
-    const season_year = parseInt(body.season_year);
+    const season_name = req.params.name.toLowerCase();
+    const season_year = parseInt(req.params.year);
 
     if (
       season_name === null ||
@@ -50,7 +44,7 @@ router.get(
         throw new BadRequestError('unable to get season');
       }
       const season = Season.build({
-        season_name: data.season_name,
+        season_name: data.season_name.toLowerCase(),
         season_year: data.season_year,
         anime: data.anime,
       });

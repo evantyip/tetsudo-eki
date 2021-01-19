@@ -4,6 +4,7 @@ import { json } from 'body-parser';
 import cookieSession from 'cookie-session';
 import { errorHandler, NotFoundError, currentUser } from '@tetsudoeki/common';
 import { getSeasonRouter } from './routes/season';
+import { getCurrentSeasonRouter } from './routes/currentSeason';
 
 //initialization
 const app = express();
@@ -22,6 +23,7 @@ app.use(currentUser);
 
 // specific routes
 app.use(getSeasonRouter);
+app.use(getCurrentSeasonRouter);
 
 // anything that isn't a valid route
 app.all('*', async (req, res) => {
