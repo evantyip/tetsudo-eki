@@ -2,13 +2,8 @@ import express from 'express';
 import 'express-async-errors';
 import { json } from 'body-parser';
 import cookieSession from 'cookie-session';
-import { errorHandler, NotFoundError } from '@tetsudoeki/common';
-
-import { currentUserRouter } from './Routes/current-user';
-import { signinRouter } from './Routes/signin';
-import { signoutRouter } from './Routes/signout';
-import { signupRouter } from './Routes/signup';
-import { updatePwRouter } from './Routes/updatepassword';
+import { errorHandler, NotFoundError, currentUser } from '@tetsudoeki/common';
+import { getSeasonRouter } from './routes/season';
 
 //initialization
 const app = express();
@@ -18,15 +13,15 @@ app.use(
   cookieSession({
     signed: false,
     // secure: false,
+    // development
     secure: process.env.NODE_ENV !== 'test',
   })
 );
+//must be put after cookie session
+app.use(currentUser);
+
 // specific routes
-app.use(currentUserRouter);
-app.use(signinRouter);
-app.use(signoutRouter);
-app.use(signupRouter);
-app.use(updatePwRouter);
+app.use(getSeasonRouter);
 
 // anything that isn't a valid route
 app.all('*', async (req, res) => {
