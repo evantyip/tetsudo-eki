@@ -80,7 +80,7 @@ const DiscoverPage = ({ currentUser, currentSeason }) => {
         </div>
         <Space align="start" size="large" wrap>
           {season.anime.map((ani) => {
-            return <AnimeCard anime={ani} />;
+            return <AnimeCard key={ani.title} anime={ani} />;
           })}
         </Space>
       </Content>

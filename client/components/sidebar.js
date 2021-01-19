@@ -13,6 +13,7 @@ const { Title } = Typography;
 // is a top nav bar
 
 const Sidebar = ({ currentUser, route }) => {
+  const [collapsed, setCollapsed] = useState(false);
   const links = [
     !currentUser && { label: 'Sign Up', href: '/auth/signup' },
     !currentUser && { label: 'Sign In', href: '/auth/signin' },
@@ -29,6 +30,11 @@ const Sidebar = ({ currentUser, route }) => {
 
   return (
     <Sider
+      collapsible
+      collapsed={collapsed}
+      onCollapse={(e) => {
+        setCollapsed(!collapsed);
+      }}
       style={{
         overflow: 'auto',
         height: '100vh',
@@ -37,9 +43,11 @@ const Sidebar = ({ currentUser, route }) => {
       }}
     >
       <div className="logo">
-        <Title className="logo-title" level={3}>
-          Tetsudo Eki
-        </Title>
+        {collapsed == false && (
+          <Title className="logo-title" level={3}>
+            Tetsudo Eki
+          </Title>
+        )}
       </div>
 
       <Menu theme="dark" mode="inline" defaultSelectedKeys={[`${route}`]}>
