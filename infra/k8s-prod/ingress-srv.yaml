@@ -10,7 +10,7 @@ spec:
   tls:
     - hosts:
         - www.tetsudoeki.com
-      secretName: tickets-tls
+      secretName: tetsudoeki-tls
   rules:
     - host: www.tetsudoeki.com
       http:
