@@ -7,13 +7,25 @@ import { Alert } from 'antd';
 //
 // custom hook to perform an axios request
 // and return any errors
+interface useRequestParameters {
+  url: string;
+  method: string;
+  body: any;
+  onSuccess: (data:any) => any;
+}
 
-const useRequest = ({ url, method, body, onSuccess }) => {
+interface error {
+  message: string;
+  field?: string;
+}
+
+const useRequest = ({ url, method, body, onSuccess }: useRequestParameters) => {
   const [errors, setErrors] = useState(null);
 
   const doRequest = async (props = {}) => {
     try {
       setErrors(null);
+      // @ts-ignore
       const response = await axios[method](url, { ...body, ...props });
 
       if (onSuccess) {
@@ -22,7 +34,7 @@ const useRequest = ({ url, method, body, onSuccess }) => {
       return response.data;
     } catch (err) {
       setErrors(
-        err.response.data.errors.map((err) => {
+        err.response.data.errors.map((err: error) => {
           return (
             <Alert
               showIcon

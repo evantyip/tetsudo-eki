@@ -3,6 +3,7 @@ import Router from 'next/router';
 import useRequest from '../../hooks/use-request';
 import CustomFooter from '../../components/footer';
 import { Layout, Button, Form, Input, Space, Typography } from 'antd';
+import {ValidateErrorEntity} from 'rc-field-form/lib/interface';
 
 const { Content } = Layout;
 const { Title, Text } = Typography;
@@ -21,16 +22,16 @@ const tailLayout = {
     span: 16,
   },
 };
-// Signup page
+// Signin page
 //
 // Description:
 // see title
 
-const Signup = () => {
+const Signin = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const { doRequest, errors } = useRequest({
-    url: '/api/users/signup',
+    url: '/api/users/signin',
     method: 'post',
     body: {
       email,
@@ -41,11 +42,11 @@ const Signup = () => {
     },
   });
 
-  const onFinish = async (values) => {
+  const onFinish = async () => {
     doRequest();
   };
 
-  const onFinishFailed = (errorInfo) => {
+  const onFinishFailed = (errorInfo: ValidateErrorEntity<string>) => {
     // Maybe future stuff
   };
 
@@ -59,7 +60,7 @@ const Signup = () => {
           style={{ padding: 24, textAlign: 'center' }}
         >
           {errors}
-          <Title level={2}>Sign Up</Title>
+          <Title level={2}>Sign In</Title>
           <Form
             {...layout}
             name="basic"
@@ -108,4 +109,4 @@ const Signup = () => {
   );
 };
 
-export default Signup;
+export default Signin;

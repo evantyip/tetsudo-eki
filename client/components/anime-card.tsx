@@ -1,15 +1,16 @@
+import { Anime } from '../interfaces/anime';
 import { Card, Image, Layout, Typography, Space, Tag, Divider } from 'antd';
-import { Content } from 'antd/lib/layout/layout';
 import { useState } from 'react';
 
 const { Meta } = Card;
-const { Conent } = Layout;
+const { Content } = Layout;
 const { Title, Text } = Typography;
 
+type AppProps = {
+  anime: Anime
+}
 // Todo
-// Better Card Design
-// Card size lock
-const AnimeCard = ({ anime }) => {
+const AnimeCard = ({ anime }: AppProps) => {
   const [key, setKey] = useState('Overview');
   const tabList = [
     {
@@ -22,7 +23,7 @@ const AnimeCard = ({ anime }) => {
     },
   ];
 
-  const contentList = {
+  const contentList: {[key: string]: React.ReactNode} = {
     Overview: (
       <div>
         <Image preview={false} width={200} src={anime.image_url} />

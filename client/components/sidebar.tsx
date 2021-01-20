@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Layout, Menu, Typography } from 'antd';
 import { UserOutlined, SearchOutlined } from '@ant-design/icons';
 import { useState } from 'react';
+import { CurrentUser } from '../interfaces/currentUser';
 const { Sider, Content, Header } = Layout;
 const { Title } = Typography;
 
@@ -12,7 +13,12 @@ const { Title } = Typography;
 // conditionally renders sign in/ sign up/ sign out
 // is a top nav bar
 
-const Sidebar = ({ currentUser, route }) => {
+type AppProps = {
+  currentUser: CurrentUser;
+  route: string;
+}
+
+const Sidebar = ({ currentUser, route }: AppProps) => {
   const [collapsed, setCollapsed] = useState(false);
   const links = [
     !currentUser && { label: 'Sign Up', href: '/auth/signup' },
@@ -20,6 +26,7 @@ const Sidebar = ({ currentUser, route }) => {
     currentUser && { label: 'Sign Out', href: '/auth/signout' },
   ]
     .filter((linkConfig) => linkConfig)
+    // @ts-ignore
     .map(({ label, href }) => {
       return (
         <Menu.Item key={href} icon={<UserOutlined />}>
