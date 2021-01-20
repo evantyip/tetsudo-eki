@@ -7,11 +7,20 @@ import { Layout, Select, Space } from 'antd';
 const { Header, Content } = Layout;
 const { Option } = Select;
 
-const DiscoverPage = ({ currentUser, currentSeason }) => {
-  const [season, setSeason] = useState(currentSeason);
-  const [years, setYears] = useState([]);
+import { AppContextType} from 'next/dist/next-server/lib/utils';
+import { CurrentUser } from '../interfaces/currentUser';
+import { Anime, Season } from '../interfaces/anime';
 
-  const handleSeasonChange = async (value) => {
+type AppProps = {
+  currentUser: CurrentUser;
+  currentSeason: Season;
+}
+
+const DiscoverPage = ({ currentUser, currentSeason }: AppProps) => {
+  const [season, setSeason] = useState(currentSeason);
+  const [years, setYears] = useState<number[]>([]);
+
+  const handleSeasonChange = async (value: string) => {
     if (
       value === 'winter' ||
       value === 'spring' ||
@@ -38,8 +47,9 @@ const DiscoverPage = ({ currentUser, currentSeason }) => {
     // make an array of past 20 years
     // eventually will be mapped for year options
     let yearArray = [];
+    const d = new Date();
     for (let i = 0; i < 20; i++) {
-      yearArray.push(parseInt(season.season_year) - i);
+      yearArray.push(d.getFullYear() - i);
     }
     setYears(yearArray);
   };
@@ -69,7 +79,7 @@ const DiscoverPage = ({ currentUser, currentSeason }) => {
             <Option value="fall">Fall</Option>
           </Select>
           <Select
-            defaultValue={season.season_year}
+            defaultValue={season.season_year.toString()}
             onChange={handleSeasonChange}
             style={{ width: 120 }}
           >
@@ -79,9 +89,13 @@ const DiscoverPage = ({ currentUser, currentSeason }) => {
           </Select>
         </div>
         <Space align="start" size="large" wrap>
-          {season.anime.map((ani) => {
-            return <AnimeCard key={ani.title} anime={ani} />;
-          })}
+          {season.anime &&
+            season.anime.map((ani) => {
+              if(ani.type == "TV"){
+                return <AnimeCard key={ani.title} anime={ani} />;
+              }
+              return;
+            })}
         </Space>
       </Content>
       <CustomFooter />
@@ -89,9 +103,14 @@ const DiscoverPage = ({ currentUser, currentSeason }) => {
   );
 };
 
-DiscoverPage.getInitialProps = async (context, client, currentUser) => {
-  const { data } = await client.get(`/api/discover/season`);
-  return { currentSeason: data };
+DiscoverPage.getInitialProps = async (context: AppContextType, client: any, currentUser: CurrentUser) => {
+  try {
+    const { data } = await client.get(`/api/discover/season`);
+    return { currentSeason: data };
+  } catch (e) {
+    console.log(e.message);
+    return { currentSeason: {} };
+  }
 };
 
 export default DiscoverPage;

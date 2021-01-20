@@ -35,7 +35,10 @@ router.get('/api/discover/season', async (req: Request, res: Response) => {
   }
 
   const season_name = season;
-  const season_year = date.getFullYear();
+
+  // IMPORTANT !!!!!!!!!
+  // TEMPORARY BECAUSE JIKAN IS DOWN RN
+  const season_year = date.getFullYear() - 1;
 
   const existingSeason = await Season.findOne({
     season_name: season_name,
