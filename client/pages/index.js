@@ -38,8 +38,9 @@ const DiscoverPage = ({ currentUser, currentSeason }) => {
     // make an array of past 20 years
     // eventually will be mapped for year options
     let yearArray = [];
+    const d = new Date();
     for (let i = 0; i < 20; i++) {
-      yearArray.push(parseInt(season.season_year) - i);
+      yearArray.push(parseInt(d.getFullYear()) - i);
     }
     setYears(yearArray);
   };
@@ -79,9 +80,10 @@ const DiscoverPage = ({ currentUser, currentSeason }) => {
           </Select>
         </div>
         <Space align="start" size="large" wrap>
-          {season.anime.map((ani) => {
-            return <AnimeCard key={ani.title} anime={ani} />;
-          })}
+          {season.anime &&
+            season.anime.map((ani) => {
+              return <AnimeCard key={ani.title} anime={ani} />;
+            })}
         </Space>
       </Content>
       <CustomFooter />
@@ -90,8 +92,13 @@ const DiscoverPage = ({ currentUser, currentSeason }) => {
 };
 
 DiscoverPage.getInitialProps = async (context, client, currentUser) => {
-  const { data } = await client.get(`/api/discover/season`);
-  return { currentSeason: data };
+  try {
+    const { data } = await client.get(`/api/discover/season`);
+    return { currentSeason: data };
+  } catch (e) {
+    console.log(e.message);
+    return { currentSeason: {} };
+  }
 };
 
 export default DiscoverPage;
