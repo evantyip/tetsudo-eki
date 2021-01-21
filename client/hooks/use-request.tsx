@@ -8,7 +8,7 @@ import { Alert } from 'antd';
 // custom hook to perform an axios request
 // and return any errors
 interface useRequestParameters {
-  url: string;
+  url: string | null;
   method: string;
   body: any;
   onSuccess: (data:any) => any;
@@ -22,11 +22,11 @@ interface error {
 const useRequest = ({ url, method, body, onSuccess }: useRequestParameters) => {
   const [errors, setErrors] = useState(null);
 
-  const doRequest = async (props = {}) => {
+  const doRequest = async (otherUrl?: string, props = {}) => {
     try {
       setErrors(null);
       // @ts-ignore
-      const response = await axios[method](url, { ...body, ...props });
+      const response = await axios[method]((otherUrl || url), { ...body, ...props });
 
       if (onSuccess) {
         onSuccess(response.data);

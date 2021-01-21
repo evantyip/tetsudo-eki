@@ -1,16 +1,26 @@
 import { Anime } from '../interfaces/anime';
-import { Card, Image, Layout, Typography, Space, Tag, Divider } from 'antd';
-import { useState } from 'react';
+import {
+  Card,
+  Image,
+  Layout,
+  Typography,
+  Space,
+  Tag,
+  Divider,
+  Badge,
+} from 'antd';
+import { EditOutlined } from '@ant-design/icons';
+import { useState, useEffect } from 'react';
 
-const { Meta } = Card;
-const { Content } = Layout;
 const { Title, Text } = Typography;
 
 type AppProps = {
-  anime: Anime
-}
+  anime: Anime;
+  badgeStatus: string | null;
+};
 // Todo
-const AnimeCard = ({ anime }: AppProps) => {
+const AnimeCard = ({ anime, badgeStatus }: AppProps) => {
+  // For Tab changes on Card
   const [key, setKey] = useState('Overview');
   const tabList = [
     {
@@ -23,7 +33,17 @@ const AnimeCard = ({ anime }: AppProps) => {
     },
   ];
 
-  const contentList: {[key: string]: React.ReactNode} = {
+  // Watching and Completed States
+  const [badge, setBadge] = useState<string | null>(badgeStatus);
+  const colorChoice = new Map([
+    ['Watching', 'orange'],
+    ['Completed', 'green'],
+  ]);
+  useEffect(() => {
+    console.log('badge changed');
+  }, [badge]);
+
+  const contentList: { [key: string]: React.ReactNode } = {
     Overview: (
       <div>
         <Image preview={false} width={200} src={anime.image_url} />
@@ -73,19 +93,74 @@ const AnimeCard = ({ anime }: AppProps) => {
     ),
   };
 
+  // set color to a map of watching or completed
   return (
-    <Card
-      style={{ width: 250, height: 'flex' }}
-      key={`${anime.title + anime.airing_start}`}
-      tabList={tabList}
-      activeTabKey={key}
-      onTabChange={(key) => {
-        setKey(key);
-      }}
-      extra={<a href={anime.url}>MAL</a>}
-    >
-      {contentList[key]}
-    </Card>
+    <div>
+      {badge && (
+        <Badge.Ribbon color={colorChoice.get(badge)} text={badge}>
+          <Card
+            style={{ width: 250, height: 'flex' }}
+            tabList={tabList}
+            activeTabKey={key}
+            onTabChange={(key) => {
+              setKey(key);
+            }}
+            actions={[
+              <div
+                onClick={(e) => {
+                  console.log(e.target);
+                  if (badge === 'Watching') {
+                    setBadge(null);
+                  } else {
+                    setBadge('Watching');
+                  }
+                }}
+              >
+                <EditOutlined key="edit" />
+                <Text>Add Watching</Text>
+              </div>,
+              <div
+                onClick={(e) => {
+                  console.log(e.target);
+                  if (badge === 'Completed') {
+                    setBadge(null);
+                  } else {
+                    setBadge('Completed');
+                  }
+                }}
+              >
+                <EditOutlined key="edit" />
+                <Text>Completed</Text>
+              </div>,
+            ]}
+          >
+            {contentList[key]}
+          </Card>
+        </Badge.Ribbon>
+      )}
+      {!badge && (
+        <Card
+          style={{ width: 250, height: 'flex' }}
+          tabList={tabList}
+          activeTabKey={key}
+          onTabChange={(key) => {
+            setKey(key);
+          }}
+          actions={[
+            <div onClick={(e) => setBadge('Watching')}>
+              <EditOutlined key="edit" />
+              <Text>Add Watching</Text>
+            </div>,
+            <div onClick={(e) => setBadge('Completed')}>
+              <EditOutlined key="edit" />
+              <Text>Completed</Text>
+            </div>,
+          ]}
+        >
+          {contentList[key]}
+        </Card>
+      )}
+    </div>
   );
 };
 

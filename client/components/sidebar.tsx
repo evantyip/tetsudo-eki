@@ -13,13 +13,17 @@ const { Title } = Typography;
 // conditionally renders sign in/ sign up/ sign out
 // is a top nav bar
 
+// Need to research
+// pathname if useRouter() router.pathname?????
+
 type AppProps = {
   currentUser: CurrentUser;
   route: string;
-}
+};
 
 const Sidebar = ({ currentUser, route }: AppProps) => {
   const [collapsed, setCollapsed] = useState(false);
+
   const links = [
     !currentUser && { label: 'Sign Up', href: '/auth/signup' },
     !currentUser && { label: 'Sign In', href: '/auth/signin' },
@@ -62,6 +66,16 @@ const Sidebar = ({ currentUser, route }: AppProps) => {
         <Menu.Item key="/" icon={<SearchOutlined />}>
           <Link href="/">Discover</Link>
         </Menu.Item>
+        {currentUser && (
+          <Menu.Item key="/watching" icon={<SearchOutlined />}>
+            <Link href="/">Watching</Link>
+          </Menu.Item>
+        )}
+        {currentUser && (
+          <Menu.Item key="/completed" icon={<SearchOutlined />}>
+            <Link href="/">Completed</Link>
+          </Menu.Item>
+        )}
       </Menu>
     </Sider>
   );
