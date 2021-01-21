@@ -11,6 +11,7 @@ import {
 } from 'antd';
 import { EditOutlined } from '@ant-design/icons';
 import { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const { Title, Text } = Typography;
 
@@ -18,7 +19,7 @@ type AppProps = {
   anime: Anime;
   badgeStatus: string | null;
 };
-// Todo
+
 const AnimeCard = ({ anime, badgeStatus }: AppProps) => {
   // For Tab changes on Card
   const [key, setKey] = useState('Overview');
@@ -39,9 +40,14 @@ const AnimeCard = ({ anime, badgeStatus }: AppProps) => {
     ['Watching', 'orange'],
     ['Completed', 'green'],
   ]);
-  useEffect(() => {
-    console.log('badge changed');
-  }, [badge]);
+  const publishWatching = async () => {
+    setBadge('Watching');
+    await axios.post('/api/discover/watching', {
+      anime,
+      time: new Date(),
+      option: 'add',
+    });
+  };
 
   const contentList: { [key: string]: React.ReactNode } = {
     Overview: (
@@ -147,7 +153,7 @@ const AnimeCard = ({ anime, badgeStatus }: AppProps) => {
             setKey(key);
           }}
           actions={[
-            <div onClick={(e) => setBadge('Watching')}>
+            <div onClick={(e) => publishWatching()}>
               <EditOutlined key="edit" />
               <Text>Add Watching</Text>
             </div>,

@@ -2,6 +2,7 @@
 auth/node_modules
 auth/common/node_modules
 discover/node_modules
+watching/node_modules
 
 tickets/node_modules
 orders/node_modules
