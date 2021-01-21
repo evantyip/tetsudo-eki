@@ -4,7 +4,11 @@ import 'antd/dist/antd.css';
 import Sidebar from '../components/sidebar';
 import { Layout } from 'antd';
 import '../css/styles.css';
-import { AppContextType, AppInitialProps} from 'next/dist/next-server/lib/utils';
+import {
+  AppContextType,
+  AppInitialProps,
+} from 'next/dist/next-server/lib/utils';
+import { AppWrapper, useUserContext } from '../contexts/UserContext';
 
 // AppComponent (think wrapper)
 //
@@ -17,21 +21,32 @@ interface Context extends AppContextType, AppInitialProps {
     id: string;
     email: string;
     iat: number;
-  }
+  };
 }
 
-const AppComponent = ({ Component, pageProps, currentUser, router }: Context) => {
+const AppComponent = ({
+  Component,
+  pageProps,
+  currentUser,
+  router,
+}: Context) => {
   return (
-    <Layout>
-      <Sidebar currentUser={currentUser} route={router.route} {...pageProps} />
-      <Component currentUser={currentUser} {...pageProps} />
-    </Layout>
+    <AppWrapper>
+      <Layout>
+        <Sidebar
+          currentUser={currentUser}
+          route={router.route}
+          {...pageProps}
+        />
+        <Component currentUser={currentUser} {...pageProps} />
+      </Layout>
+    </AppWrapper>
   );
 };
 
 // get initial props for App Component and <Component />
 // if needed
-AppComponent.getInitialProps = async (appContext:AppContextType) => {
+AppComponent.getInitialProps = async (appContext: AppContextType) => {
   // @ts-ignore
   const client = buildClient(appContext.ctx);
   const { data } = await client.get('/api/users/currentuser');

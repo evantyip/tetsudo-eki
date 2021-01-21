@@ -2,7 +2,7 @@ import { useState } from 'react';
 import Router from 'next/router';
 import useRequest from '../../hooks/use-request';
 import CustomFooter from '../../components/footer';
-import { Layout, Button, Form, Input, Space, Typography } from 'antd';
+import { Layout, Button, Form, Input, Typography, Alert } from 'antd';
 import {ValidateErrorEntity} from 'rc-field-form/lib/interface';
 
 const { Content } = Layout;
@@ -30,6 +30,9 @@ const tailLayout = {
 const Signup = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [passwordTwo, setPasswordTwo] = useState('');
+  const [pwErrors, setPWErrors] = useState<React.ReactNode | null>(null);
+
   const { doRequest, errors } = useRequest({
     url: '/api/users/signup',
     method: 'post',
@@ -43,7 +46,21 @@ const Signup = () => {
   });
 
   const onFinish = async (values: string) => {
-    doRequest();
+    if(password === passwordTwo){
+      setPWErrors(null);
+      doRequest();
+    }else{
+      setPWErrors(
+        <Alert
+              showIcon
+              description="Passwords must match"
+              closable
+              message="Error"
+              type="error"
+            />
+      )
+    }
+    
   };
 
   const onFinishFailed = (errorInfo:ValidateErrorEntity) => {
@@ -53,13 +70,13 @@ const Signup = () => {
   // maybe change to a form?
   return (
     <Layout className="site-layout" style={{ marginLeft: 200 }}>
-      {/* <Header className="site-layout-background" style={{ padding: 0 }} /> */}
       <Content style={{ margin: '24px 16px 0', overflow: 'initial' }}>
         <div
           className="site-layout-background"
           style={{ padding: 24, textAlign: 'center' }}
         >
           {errors}
+          {pwErrors}
           <Title level={2}>Sign Up</Title>
           <Form
             {...layout}
@@ -94,6 +111,18 @@ const Signup = () => {
               ]}
             >
               <Input.Password onChange={(e) => setPassword(e.target.value)} />
+            </Form.Item>
+            <Form.Item
+              label="Re-enter Password"
+              name="passwordTwo"
+              rules={[
+                {
+                  required: true,
+                  message: 'Please re-input your password!',
+                },
+              ]}
+            >
+              <Input.Password onChange={(e) => setPasswordTwo(e.target.value)} />
             </Form.Item>
 
             <Form.Item {...tailLayout}>
