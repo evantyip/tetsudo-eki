@@ -7,11 +7,9 @@ import { CurrentUser } from '../interfaces/currentUser';
 const { Sider, Content, Header } = Layout;
 const { Title } = Typography;
 
-// Header component
+// Sidebar component
 // Description:
 //
-// conditionally renders sign in/ sign up/ sign out
-// is a top nav bar
 
 // Need to research
 // pathname if useRouter() router.pathname?????

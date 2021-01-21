@@ -9,17 +9,27 @@ const { Option } = Select;
 
 import { AppContextType } from 'next/dist/next-server/lib/utils';
 import { CurrentUser } from '../interfaces/currentUser';
-import { Anime, Season } from '../interfaces/anime';
+import { Season } from '../interfaces/anime';
 import useRequest from '../hooks/use-request';
 
 type AppProps = {
   currentUser: CurrentUser;
   currentSeason: Season;
+  years: number[];
 };
 
-const DiscoverPage = ({ currentUser, currentSeason }: AppProps) => {
+// Discover Page React Component
+
+const filterAnime = (data: Season): Season => {
+  const filteredAnime = data.anime.slice(0, 20);
+  return {
+    season_name: data.season_name,
+    season_year: data.season_year,
+    anime: filteredAnime,
+  };
+};
+const DiscoverPage = ({ currentUser, currentSeason, years }: AppProps) => {
   const [season, setSeason] = useState(currentSeason);
-  const [years, setYears] = useState<number[]>([]);
   const [loading, setLoading] = useState(false);
 
   const { errors, doRequest } = useRequest({
@@ -27,6 +37,7 @@ const DiscoverPage = ({ currentUser, currentSeason }: AppProps) => {
     method: 'get',
     body: {},
     onSuccess: (data) => {
+      // const filtered = filterAnime(data);
       setSeason(data);
       setLoading(false);
     },
@@ -53,12 +64,6 @@ const DiscoverPage = ({ currentUser, currentSeason }: AppProps) => {
   const getYearOptions = () => {
     // make an array of past 20 years
     // eventually will be mapped for year options
-    let yearArray = [];
-    const d = new Date();
-    for (let i = 0; i < 20; i++) {
-      yearArray.push(d.getFullYear() - i);
-    }
-    setYears(yearArray);
   };
 
   // TODO
@@ -134,12 +139,19 @@ DiscoverPage.getInitialProps = async (
   client: any,
   currentUser: CurrentUser
 ) => {
+  let yearArray = [];
+  const d = new Date();
+  for (let i = 0; i < 20; i++) {
+    yearArray.push(d.getFullYear() - i);
+  }
+  console.log('ON THE SERVER');
   try {
     const { data } = await client.get(`/api/discover/season`);
-    return { currentSeason: data };
+    // Dev purpose
+    return { currentSeason: data, years: yearArray };
   } catch (e) {
     console.log(e.message);
-    return { currentSeason: {} };
+    return { currentSeason: {}, years: yearArray };
   }
 };
 
