@@ -12,15 +12,17 @@ import {
 import { EditOutlined } from '@ant-design/icons';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { CurrentUser } from '../interfaces/currentUser';
 
 const { Title, Text } = Typography;
 
 type AppProps = {
+  currentUser: CurrentUser;
   anime: Anime;
   badgeStatus: string | null;
 };
 
-const AnimeCard = ({ anime, badgeStatus }: AppProps) => {
+const AnimeCard = ({ anime, badgeStatus, currentUser }: AppProps) => {
   // For Tab changes on Card
   const [key, setKey] = useState('Overview');
   const tabList = [
@@ -41,8 +43,14 @@ const AnimeCard = ({ anime, badgeStatus }: AppProps) => {
     ['Completed', 'green'],
   ]);
   const publishWatching = async (option: string) => {
-    setBadge('Watching');
     await axios.post('/api/discover/watching', {
+      anime,
+      time: new Date(),
+      option,
+    });
+  };
+  const publishCompleted = async (option: string) => {
+    await axios.post('/api/discover/completed', {
       anime,
       time: new Date(),
       option,
@@ -50,6 +58,7 @@ const AnimeCard = ({ anime, badgeStatus }: AppProps) => {
   };
 
   const contentList: { [key: string]: React.ReactNode } = {
+    // Overview Portion of anime card
     Overview: (
       <div>
         <Image preview={false} width={200} src={anime.image_url} />
@@ -77,6 +86,7 @@ const AnimeCard = ({ anime, badgeStatus }: AppProps) => {
         </Space>
       </div>
     ),
+    // Detail portion of anime card
     Details: (
       <Space direction="vertical">
         <Space direction="horizontal">
@@ -99,7 +109,6 @@ const AnimeCard = ({ anime, badgeStatus }: AppProps) => {
     ),
   };
 
-  // set color to a map of watching or completed
   return (
     <div>
       {badge && (
@@ -114,11 +123,14 @@ const AnimeCard = ({ anime, badgeStatus }: AppProps) => {
             actions={[
               <div
                 onClick={(e) => {
-                  console.log(e.target);
-                  if (badge === 'Watching') {
+                  // two states to account for
+                  if (badge == 'Watching') {
                     publishWatching('remove');
                     setBadge(null);
-                  } else {
+                  }
+                  if (badge == 'Completed') {
+                    publishCompleted('remove');
+                    publishWatching('add');
                     setBadge('Watching');
                   }
                 }}
@@ -128,10 +140,13 @@ const AnimeCard = ({ anime, badgeStatus }: AppProps) => {
               </div>,
               <div
                 onClick={(e) => {
-                  console.log(e.target);
-                  if (badge === 'Completed') {
+                  if (badge == 'Completed') {
+                    publishCompleted('remove');
                     setBadge(null);
-                  } else {
+                  }
+                  if (badge == 'Watching') {
+                    publishWatching('remove');
+                    publishCompleted('add');
                     setBadge('Completed');
                   }
                 }}
@@ -154,14 +169,28 @@ const AnimeCard = ({ anime, badgeStatus }: AppProps) => {
             setKey(key);
           }}
           actions={[
-            <div onClick={(e) => publishWatching('add')}>
-              <EditOutlined key="edit" />
-              <Text>Add Watching</Text>
-            </div>,
-            <div onClick={(e) => setBadge('Completed')}>
-              <EditOutlined key="edit" />
-              <Text>Completed</Text>
-            </div>,
+            currentUser && (
+              <div
+                onClick={(e) => {
+                  publishWatching('add');
+                  setBadge('Watching');
+                }}
+              >
+                <EditOutlined key="edit" />
+                <Text>Add Watching</Text>
+              </div>
+            ),
+            currentUser && (
+              <div
+                onClick={(e) => {
+                  publishCompleted('add');
+                  setBadge('Completed');
+                }}
+              >
+                <EditOutlined key="edit" />
+                <Text>Completed</Text>
+              </div>
+            ),
           ]}
         >
           {contentList[key]}

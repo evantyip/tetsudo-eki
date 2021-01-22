@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tetsudoeki-completed-mongo-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tetsudoeki-completed-mongo
+  template:
+    metadata:
+      labels:
+        app: tetsudoeki-completed-mongo
+    spec:
+      containers:
+        - name: tetsudoeki-completed-mongo
+          image: mongo
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tetsudoeki-completed-mongo-srv
+spec:
+  selector:
+    app: tetsudoeki-completed-mongo
+  ports:
+    - name: db
+      protocol: TCP
+      port: 27017
+      targetPort: 27017

@@ -22,6 +22,10 @@ spec:
             backend:
               serviceName: tetsudoeki-watching-srv
               servicePort: 3000
+          - path: /api/completed/?(.*)
+            backend:
+              serviceName: tetsudoeki-completed-srv
+              servicePort: 3000
           - path: /(.*)
             backend:
               serviceName: tetsudoeki-client-srv

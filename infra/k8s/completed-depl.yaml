@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tetsudoeki-completed-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tetsudoeki-completed
+  template:
+    metadata:
+      labels:
+        app: tetsudoeki-completed
+    spec:
+      containers:
+        - name: tetsudoeki-completed
+          image: evantyip/tetsudoeki-completed
+          env:
+            - name: NATS_CLIENT_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: NATS_URL
+              value: 'http://tetsudoeki-nats-srv:4222'
+            - name: NATS_CLUSTER_ID
+              value: tetsudoeki
+            - name: MONGO_URI
+              value: 'mongodb://tetsudoeki-completed-mongo-srv:27017/completed'
+            - name: JWT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: JWT_KEY
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tetsudoeki-completed-srv
+spec:
+  selector:
+    app: tetsudoeki-completed
+  ports:
+    - name: tetsudoeki-completed
+      protocol: TCP
+      port: 3000
+      targetPort: 3000

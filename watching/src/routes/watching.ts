@@ -1,5 +1,6 @@
 import express, { Request, Response } from 'express';
 import {
+  BadRequestError,
   NotAuthorizedError,
   NotFoundError,
   requireAuth,
@@ -9,6 +10,7 @@ import { UserWatchingList } from '../models/userWatchingList';
 const router = express.Router();
 
 type Anime = {
+  user_started_watching: Date;
   mal_id: string;
   url: string;
   title: string;
@@ -41,15 +43,23 @@ router.get(
   '/api/watching/:id',
   requireAuth,
   async (req: Request, res: Response) => {
+    if (req.currentUser!.id !== req.params.id) {
+      throw new BadRequestError('Not authorized');
+    }
+
     const watchingList = await UserWatchingList.findOne({
       userId: req.params.id.toString(),
     });
 
     if (!watchingList) {
-      throw new NotFoundError();
-    }
-    if (req.currentUser!.id !== req.params.id) {
-      throw new NotAuthorizedError();
+      let watchingAnime: Anime[] = [];
+      const newWatchingList = UserWatchingList.build({
+        userId: req.currentUser!.id,
+        watchingAnime,
+      });
+      await newWatchingList.save();
+      res.send(newWatchingList);
+      // throw new NotFoundError();
     }
 
     // can't send sets through JSON
@@ -65,7 +75,7 @@ router.get(
 
     res.send({
       UserWatchingList: watchingList,
-      UserAnimeMap: animeMap,
+      UserWatchingAnimeMap: animeMap,
     });
   }
 );

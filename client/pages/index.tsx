@@ -16,14 +16,16 @@ type AppProps = {
   currentUser: CurrentUser;
   currentSeason: Season;
   years: number[];
-  userAnimeMap: any;
+  userWatchingAnimeMap: any;
+  userCompletedAnimeMap: any;
 };
 
 // Discover Page React Component
 
 const DiscoverPage = ({
   currentUser,
-  userAnimeMap,
+  userWatchingAnimeMap,
+  userCompletedAnimeMap,
   currentSeason,
   years,
 }: AppProps) => {
@@ -108,14 +110,18 @@ const DiscoverPage = ({
             {!loading &&
               season.anime &&
               season.anime.map((ani) => {
-                const badgeStatus: string | null = userAnimeMap.hasOwnProperty(
-                  ani.title
-                )
-                  ? 'Watching'
-                  : null;
+                let badgeStatus: string | null = null;
+                if (userWatchingAnimeMap.hasOwnProperty(ani.title)) {
+                  badgeStatus = 'Watching';
+                }
+                if (userCompletedAnimeMap.hasOwnProperty(ani.title)) {
+                  badgeStatus = 'Completed';
+                }
+
                 if (ani.type == 'TV') {
                   return (
                     <AnimeCard
+                      currentUser={currentUser}
                       key={ani.title}
                       badgeStatus={badgeStatus}
                       anime={ani}
@@ -147,23 +153,28 @@ DiscoverPage.getInitialProps = async (
   try {
     const { data } = await client.get(`/api/discover/season`);
     let watchingAnime;
+    let completedAnime;
     if (currentUser) {
-      const { data } = await client.get(`/api/watching/${currentUser.id}`);
-      watchingAnime = data;
+      const request = await client.get(`/api/watching/${currentUser.id}`);
+      watchingAnime = request.data;
+      const { data } = await client.get(`/api/completed/${currentUser.id}`);
+      completedAnime = data;
     }
 
     // Dev purpose
     return {
       currentSeason: data,
-      userAnimeMap: watchingAnime.UserAnimeMap,
+      userWatchingAnimeMap: watchingAnime.UserWatchingAnimeMap,
+      userCompletedAnimeMap: completedAnime.UserCompletedAnimeMap,
       years: yearArray,
     };
   } catch (e) {
     console.log(e.message);
     return {
-      currentSeason: { season_name: 'winter', season_year: '2020', anime: [] },
+      currentSeason: { season_name: 'winter', season_year: '2021', anime: [] },
       years: yearArray,
-      userAnimeMap: null,
+      userWatchingAnimeMap: {},
+      userCompletedAnimeMap: {},
     };
   }
 };

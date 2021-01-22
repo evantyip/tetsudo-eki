@@ -6,6 +6,7 @@ import { errorHandler, NotFoundError, currentUser } from '@tetsudoeki/common';
 import { getSeasonRouter } from './routes/season';
 import { getCurrentSeasonRouter } from './routes/currentSeason';
 import { watchingRouter } from './routes/watching';
+import { completedRouter } from './routes/completed';
 
 //initialization
 const app = express();
@@ -26,6 +27,7 @@ app.use(currentUser);
 app.use(getSeasonRouter);
 app.use(getCurrentSeasonRouter);
 app.use(watchingRouter);
+app.use(completedRouter);
 
 // anything that isn't a valid route
 app.all('*', async (req, res) => {
