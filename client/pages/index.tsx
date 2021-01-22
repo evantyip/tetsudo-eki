@@ -9,26 +9,24 @@ const { Option } = Select;
 
 import { AppContextType } from 'next/dist/next-server/lib/utils';
 import { CurrentUser } from '../interfaces/currentUser';
-import { Season } from '../interfaces/anime';
+import { Anime, Season } from '../interfaces/anime';
 import useRequest from '../hooks/use-request';
 
 type AppProps = {
   currentUser: CurrentUser;
   currentSeason: Season;
   years: number[];
+  userAnimeMap: any;
 };
 
 // Discover Page React Component
 
-const filterAnime = (data: Season): Season => {
-  const filteredAnime = data.anime.slice(0, 20);
-  return {
-    season_name: data.season_name,
-    season_year: data.season_year,
-    anime: filteredAnime,
-  };
-};
-const DiscoverPage = ({ currentUser, currentSeason, years }: AppProps) => {
+const DiscoverPage = ({
+  currentUser,
+  userAnimeMap,
+  currentSeason,
+  years,
+}: AppProps) => {
   const [season, setSeason] = useState(currentSeason);
   const [loading, setLoading] = useState(false);
 
@@ -55,15 +53,6 @@ const DiscoverPage = ({ currentUser, currentSeason, years }: AppProps) => {
       setLoading(true);
       doRequest(`/api/discover/season/${season.season_name}/${value}`);
     }
-  };
-
-  useEffect(() => {
-    getYearOptions();
-  }, []);
-
-  const getYearOptions = () => {
-    // make an array of past 20 years
-    // eventually will be mapped for year options
   };
 
   // TODO
@@ -119,9 +108,18 @@ const DiscoverPage = ({ currentUser, currentSeason, years }: AppProps) => {
             {!loading &&
               season.anime &&
               season.anime.map((ani) => {
+                const badgeStatus: string | null = userAnimeMap.hasOwnProperty(
+                  ani.title
+                )
+                  ? 'Watching'
+                  : null;
                 if (ani.type == 'TV') {
                   return (
-                    <AnimeCard key={ani.title} badgeStatus={null} anime={ani} />
+                    <AnimeCard
+                      key={ani.title}
+                      badgeStatus={badgeStatus}
+                      anime={ani}
+                    />
                   );
                 }
                 return;
@@ -134,6 +132,7 @@ const DiscoverPage = ({ currentUser, currentSeason, years }: AppProps) => {
   );
 };
 
+// Retrieve inital data
 DiscoverPage.getInitialProps = async (
   context: AppContextType,
   client: any,
@@ -147,11 +146,25 @@ DiscoverPage.getInitialProps = async (
   console.log('ON THE SERVER');
   try {
     const { data } = await client.get(`/api/discover/season`);
+    let watchingAnime;
+    if (currentUser) {
+      const { data } = await client.get(`/api/watching/${currentUser.id}`);
+      watchingAnime = data;
+    }
+
     // Dev purpose
-    return { currentSeason: data, years: yearArray };
+    return {
+      currentSeason: data,
+      userAnimeMap: watchingAnime.UserAnimeMap,
+      years: yearArray,
+    };
   } catch (e) {
     console.log(e.message);
-    return { currentSeason: {}, years: yearArray };
+    return {
+      currentSeason: { season_name: 'winter', season_year: '2020', anime: [] },
+      years: yearArray,
+      userAnimeMap: null,
+    };
   }
 };
 

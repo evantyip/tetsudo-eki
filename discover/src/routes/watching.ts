@@ -8,6 +8,7 @@ import {
 import axios from 'axios';
 import { Season } from '../models/seasonModel';
 import { WatchingAddPublisher } from '../events/publishers/watching-add-publisher';
+import { WatchingRemovePublisher } from '../events/publishers/watching-remove-publisher';
 import { natsWrapper } from '../nats-wrapper';
 
 const router = express.Router();
@@ -31,8 +32,8 @@ router.post(
         anime: anime,
       });
       res.status(200).send({});
-    } else if (option === 'delete') {
-      new WatchinRemovePublisher(natsWrapper.client).publish({
+    } else if (option === 'remove') {
+      new WatchingRemovePublisher(natsWrapper.client).publish({
         userId: req.currentUser!.id,
         anime: anime,
       });

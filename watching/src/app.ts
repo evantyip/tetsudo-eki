@@ -3,6 +3,7 @@ import 'express-async-errors';
 import { json } from 'body-parser';
 import cookieSession from 'cookie-session';
 import { errorHandler, NotFoundError, currentUser } from '@tetsudoeki/common';
+import { watchingGetRouter } from './routes/watching';
 
 //initialization
 const app = express();
@@ -20,6 +21,7 @@ app.use(
 app.use(currentUser);
 
 // specific routes
+app.use(watchingGetRouter);
 
 // anything that isn't a valid route
 app.all('*', async (req, res) => {

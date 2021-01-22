@@ -40,12 +40,12 @@ const AnimeCard = ({ anime, badgeStatus }: AppProps) => {
     ['Watching', 'orange'],
     ['Completed', 'green'],
   ]);
-  const publishWatching = async () => {
+  const publishWatching = async (option: string) => {
     setBadge('Watching');
     await axios.post('/api/discover/watching', {
       anime,
       time: new Date(),
-      option: 'add',
+      option,
     });
   };
 
@@ -116,6 +116,7 @@ const AnimeCard = ({ anime, badgeStatus }: AppProps) => {
                 onClick={(e) => {
                   console.log(e.target);
                   if (badge === 'Watching') {
+                    publishWatching('remove');
                     setBadge(null);
                   } else {
                     setBadge('Watching');
@@ -153,7 +154,7 @@ const AnimeCard = ({ anime, badgeStatus }: AppProps) => {
             setKey(key);
           }}
           actions={[
-            <div onClick={(e) => publishWatching()}>
+            <div onClick={(e) => publishWatching('add')}>
               <EditOutlined key="edit" />
               <Text>Add Watching</Text>
             </div>,
