@@ -60,23 +60,21 @@ router.get(
       await newWatchingList.save();
       res.send(newWatchingList);
       // throw new NotFoundError();
-    }
+    } else {
+      let animeMap: any = new Object();
 
-    // can't send sets through JSON
+      if (watchingList.watchingAnime) {
+        watchingList.watchingAnime.forEach((element: Anime) => {
+          animeMap[element.title] = true;
+        });
+      }
+      // console.log(animeMap);
 
-    let animeMap: any = new Object();
-
-    if (watchingList.watchingAnime) {
-      watchingList.watchingAnime.forEach((element: Anime) => {
-        animeMap[element.title] = true;
+      res.send({
+        UserWatchingList: watchingList,
+        UserWatchingAnimeMap: animeMap,
       });
     }
-    // console.log(animeMap);
-
-    res.send({
-      UserWatchingList: watchingList,
-      UserWatchingAnimeMap: animeMap,
-    });
   }
 );
 

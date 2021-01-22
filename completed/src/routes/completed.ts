@@ -60,23 +60,21 @@ router.get(
       res.send(newcompletedList);
       // console.log('ONE');
       // throw new NotFoundError();
-    }
+    } else {
+      let animeMap: any = new Object();
 
-    // can't send sets through JSON
+      if (completedList.completedAnime) {
+        completedList.completedAnime.forEach((element: Anime) => {
+          animeMap[element.title] = true;
+        });
+      }
+      // console.log(animeMap);
 
-    let animeMap: any = new Object();
-
-    if (completedList.completedAnime) {
-      completedList.completedAnime.forEach((element: Anime) => {
-        animeMap[element.title] = true;
+      res.send({
+        UserCompletedList: completedList,
+        UserCompletedAnimeMap: animeMap,
       });
     }
-    // console.log(animeMap);
-
-    res.send({
-      UserCompletedList: completedList,
-      UserCompletedAnimeMap: animeMap,
-    });
   }
 );
 

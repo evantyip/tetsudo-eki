@@ -31,6 +31,12 @@ const DiscoverPage = ({
 }: AppProps) => {
   const [season, setSeason] = useState(currentSeason);
   const [loading, setLoading] = useState(false);
+  const [watchingAnimeMap, setWatchingAnimeMap] = useState(
+    userWatchingAnimeMap
+  );
+  const [completedAnimeMap, setCompletedAnimeMap] = useState(
+    userCompletedAnimeMap
+  );
 
   const { errors, doRequest } = useRequest({
     url: null,
@@ -56,6 +62,17 @@ const DiscoverPage = ({
       doRequest(`/api/discover/season/${season.season_name}/${value}`);
     }
   };
+  const handleSeasonUpdate = async () => {
+    if (currentUser) {
+      const request = await axios.get(`/api/watching/${currentUser.id}`);
+      setWatchingAnimeMap(request.data.UserWatchingAnimeMap);
+      const { data } = await axios.get(`/api/completed/${currentUser.id}`);
+      setCompletedAnimeMap(data.UserCompletedAnimeMap);
+    }
+  };
+  useEffect(() => {
+    handleSeasonUpdate();
+  }, [season]);
 
   // TODO
   // Better Spacing
@@ -111,10 +128,16 @@ const DiscoverPage = ({
               season.anime &&
               season.anime.map((ani) => {
                 let badgeStatus: string | null = null;
-                if (userWatchingAnimeMap.hasOwnProperty(ani.title)) {
+                if (
+                  watchingAnimeMap &&
+                  watchingAnimeMap.hasOwnProperty(ani.title)
+                ) {
                   badgeStatus = 'Watching';
                 }
-                if (userCompletedAnimeMap.hasOwnProperty(ani.title)) {
+                if (
+                  completedAnimeMap &&
+                  completedAnimeMap.hasOwnProperty(ani.title)
+                ) {
                   badgeStatus = 'Completed';
                 }
 
@@ -150,33 +173,35 @@ DiscoverPage.getInitialProps = async (
     yearArray.push(d.getFullYear() - i);
   }
   console.log('ON THE SERVER');
+  let season = { season_name: 'winter', season_year: '2021', anime: [] };
+  let watchingAnime = { UserWatchingAnimeMap: {} };
+  let completedAnime = { UserCompletedAnimeMap: {} };
+
   try {
     const { data } = await client.get(`/api/discover/season`);
-    let watchingAnime;
-    let completedAnime;
+    season = data;
+  } catch (e) {
+    console.log(e.message);
+  }
+  try {
     if (currentUser) {
       const request = await client.get(`/api/watching/${currentUser.id}`);
       watchingAnime = request.data;
       const { data } = await client.get(`/api/completed/${currentUser.id}`);
       completedAnime = data;
     }
-
-    // Dev purpose
-    return {
-      currentSeason: data,
-      userWatchingAnimeMap: watchingAnime.UserWatchingAnimeMap,
-      userCompletedAnimeMap: completedAnime.UserCompletedAnimeMap,
-      years: yearArray,
-    };
   } catch (e) {
     console.log(e.message);
-    return {
-      currentSeason: { season_name: 'winter', season_year: '2021', anime: [] },
-      years: yearArray,
-      userWatchingAnimeMap: {},
-      userCompletedAnimeMap: {},
-    };
   }
+
+  // Dev purpose
+
+  return {
+    currentSeason: season,
+    years: yearArray,
+    userWatchingAnimeMap: watchingAnime.UserWatchingAnimeMap,
+    userCompletedAnimeMap: completedAnime.UserCompletedAnimeMap,
+  };
 };
 
 export default DiscoverPage;
