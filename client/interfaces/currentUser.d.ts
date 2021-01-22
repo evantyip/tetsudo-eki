@@ -1,7 +1,5 @@
-export interface CurrentUser {
-  currentUser: {
-    id: string;
-    email: string;
-    iat: number;
-  };
-}
+export type CurrentUser = {
+  id: string;
+  email: string;
+  iat: number;
+};

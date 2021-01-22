@@ -9,28 +9,34 @@ const { Option } = Select;
 
 import { AppContextType } from 'next/dist/next-server/lib/utils';
 import { CurrentUser } from '../interfaces/currentUser';
-import { Season } from '../interfaces/anime';
+import { Anime, Season } from '../interfaces/anime';
 import useRequest from '../hooks/use-request';
 
 type AppProps = {
   currentUser: CurrentUser;
   currentSeason: Season;
   years: number[];
+  userWatchingAnimeMap: any;
+  userCompletedAnimeMap: any;
 };
 
 // Discover Page React Component
 
-const filterAnime = (data: Season): Season => {
-  const filteredAnime = data.anime.slice(0, 20);
-  return {
-    season_name: data.season_name,
-    season_year: data.season_year,
-    anime: filteredAnime,
-  };
-};
-const DiscoverPage = ({ currentUser, currentSeason, years }: AppProps) => {
+const DiscoverPage = ({
+  currentUser,
+  userWatchingAnimeMap,
+  userCompletedAnimeMap,
+  currentSeason,
+  years,
+}: AppProps) => {
   const [season, setSeason] = useState(currentSeason);
   const [loading, setLoading] = useState(false);
+  const [watchingAnimeMap, setWatchingAnimeMap] = useState(
+    userWatchingAnimeMap
+  );
+  const [completedAnimeMap, setCompletedAnimeMap] = useState(
+    userCompletedAnimeMap
+  );
 
   const { errors, doRequest } = useRequest({
     url: null,
@@ -56,15 +62,17 @@ const DiscoverPage = ({ currentUser, currentSeason, years }: AppProps) => {
       doRequest(`/api/discover/season/${season.season_name}/${value}`);
     }
   };
-
-  useEffect(() => {
-    getYearOptions();
-  }, []);
-
-  const getYearOptions = () => {
-    // make an array of past 20 years
-    // eventually will be mapped for year options
+  const handleSeasonUpdate = async () => {
+    if (currentUser) {
+      const request = await axios.get(`/api/watching/${currentUser.id}`);
+      setWatchingAnimeMap(request.data.UserWatchingAnimeMap);
+      const { data } = await axios.get(`/api/completed/${currentUser.id}`);
+      setCompletedAnimeMap(data.UserCompletedAnimeMap);
+    }
   };
+  useEffect(() => {
+    handleSeasonUpdate();
+  }, [season]);
 
   // TODO
   // Better Spacing
@@ -119,9 +127,28 @@ const DiscoverPage = ({ currentUser, currentSeason, years }: AppProps) => {
             {!loading &&
               season.anime &&
               season.anime.map((ani) => {
+                let badgeStatus: string | null = null;
+                if (
+                  watchingAnimeMap &&
+                  watchingAnimeMap.hasOwnProperty(ani.title)
+                ) {
+                  badgeStatus = 'Watching';
+                }
+                if (
+                  completedAnimeMap &&
+                  completedAnimeMap.hasOwnProperty(ani.title)
+                ) {
+                  badgeStatus = 'Completed';
+                }
+
                 if (ani.type == 'TV') {
                   return (
-                    <AnimeCard key={ani.title} badgeStatus={null} anime={ani} />
+                    <AnimeCard
+                      currentUser={currentUser}
+                      key={ani.title}
+                      badgeStatus={badgeStatus}
+                      anime={ani}
+                    />
                   );
                 }
                 return;
@@ -134,6 +161,7 @@ const DiscoverPage = ({ currentUser, currentSeason, years }: AppProps) => {
   );
 };
 
+// Retrieve inital data
 DiscoverPage.getInitialProps = async (
   context: AppContextType,
   client: any,
@@ -145,14 +173,35 @@ DiscoverPage.getInitialProps = async (
     yearArray.push(d.getFullYear() - i);
   }
   console.log('ON THE SERVER');
+  let season = { season_name: 'winter', season_year: '2021', anime: [] };
+  let watchingAnime = { UserWatchingAnimeMap: {} };
+  let completedAnime = { UserCompletedAnimeMap: {} };
+
   try {
     const { data } = await client.get(`/api/discover/season`);
-    // Dev purpose
-    return { currentSeason: data, years: yearArray };
+    season = data;
   } catch (e) {
     console.log(e.message);
-    return { currentSeason: {}, years: yearArray };
   }
+  try {
+    if (currentUser) {
+      const request = await client.get(`/api/watching/${currentUser.id}`);
+      watchingAnime = request.data;
+      const { data } = await client.get(`/api/completed/${currentUser.id}`);
+      completedAnime = data;
+    }
+  } catch (e) {
+    console.log(e.message);
+  }
+
+  // Dev purpose
+
+  return {
+    currentSeason: season,
+    years: yearArray,
+    userWatchingAnimeMap: watchingAnime.UserWatchingAnimeMap,
+    userCompletedAnimeMap: completedAnime.UserCompletedAnimeMap,
+  };
 };
 
 export default DiscoverPage;

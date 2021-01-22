@@ -66,7 +66,7 @@ const Sidebar = ({ currentUser, route }: AppProps) => {
         </Menu.Item>
         {currentUser && (
           <Menu.Item key="/watching" icon={<SearchOutlined />}>
-            <Link href="/">Watching</Link>
+            <Link href="/watching">Watching</Link>
           </Menu.Item>
         )}
         {currentUser && (

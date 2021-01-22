@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tetsudoeki-watching-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tetsudoeki-watching
+  template:
+    metadata:
+      labels:
+        app: tetsudoeki-watching
+    spec:
+      containers:
+        - name: tetsudoeki-watching
+          image: evantyip/tetsudoeki-watching
+          env:
+            - name: NATS_CLIENT_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: NATS_URL
+              value: 'http://tetsudoeki-nats-srv:4222'
+            - name: NATS_CLUSTER_ID
+              value: tetsudoeki
+            - name: MONGO_URI
+              value: 'mongodb://tetsudoeki-watching-mongo-srv:27017/watching'
+            - name: JWT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: JWT_KEY
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tetsudoeki-watching-srv
+spec:
+  selector:
+    app: tetsudoeki-watching
+  ports:
+    - name: tetsudoeki-watching
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
